@@ -19,7 +19,7 @@ Sources: research/containerdays-sg-2026/case-studies.md (11 CNCF case studies, c
 30 s. Open: 'Raise your hand if you run GPUs on Kubernetes. Keep it up if you know your average utilization.' Then: this talk starts with one card and ends with a cloud. No vendor pitch: I will show where it does not work too.
 -->
 @variant dark
-@side-image assets/qr-hami-repo.png
+@side-image assets/containerdays/qr-code-containerdays-singapore.png
 @kicker ContainerDays 2026 Singapore · CNCF Incubating project
 
 # 10x Your Neocloud's GPU Utilization with HAMi
@@ -1069,7 +1069,7 @@ QR goes to the HAMi repo. Workshop labs: github.com/Project-HAMi/hami-workshop (
 Questions.
 -->
 @variant dark
-@side-image assets/qr-hami-repo.png
+@side-image assets/containerdays/qr-code-containerdays-singapore.png
 @kicker CNCF Incubating · hundreds in production · 4,900+ GitHub stars
 
 # Thank you
@@ -1087,6 +1087,7 @@ BACKUP for 'which scheduler?' questions. Sangfor: Volcano (gang, LWS). SF Techno
 @layout image-right
 
 ## Backup: one isolation layer, several brains
+@hidden
 
 @subtitle Every production case pairs sharing with a scheduler
 
@@ -1107,6 +1108,7 @@ BACKUP for observability questions. Scheduler and DRA metrics are reservations (
 @layout image-right
 
 ## Backup: reserved is not used
+@hidden
 
 @subtitle Two metric families, keep them apart
 
@@ -1123,6 +1125,7 @@ BACKUP if asked about noisy neighbours. Own measurement (Viettel Cloud notebook 
 -->
 
 ## Backup: stable while shared
+@hidden
 
 @subtitle Epoch-time jitter (CV) of a training notebook on a shared H200
 
@@ -1161,6 +1164,7 @@ BACKUP for DRA deep-dive questions. DeviceClass groups devices; ResourceClaim is
 @layout image-right
 
 ## Backup: DRA ResourceClaim
+@hidden
 
 @subtitle What HAMi-DRA generates from `nvidia.com/gpu` requests
 
@@ -1181,6 +1185,7 @@ Pod: gpumem is MB and a hard limit; gpucores is percent and only a hint unless t
 -->
 
 ## Backup: the blueprint as config
+@hidden
 
 @subtitle Chart defaults, a tenant quota, a tenant pod
 
@@ -1225,6 +1230,7 @@ All at cncf.io/case-studies/?_sft_lf-project=hami (read 2026-10-24). Own measure
 -->
 
 ## Backup: sources
+@hidden
 
 @subtitle CNCF case studies used in this talk
 
