@@ -213,6 +213,57 @@ Code: `cmd/scheduler`, `cmd/device-plugin`, `cmd/vGPUmonitor`, `pkg/device/<vend
 
 ---
 
+@layout two-col
+
+## How HAMi Works
+
+@subtitle Pod creation to GPU isolation
+
+<!--
+Seven stages from pod submission to isolated GPU. The mutating webhook injects the request, the HAMi core library enforces isolation via symbolic hijacking: no kernel modules. (From the KubeCon Japan SNOW talk.)
+-->
+
+HAMi intercepts pod creation and GPU allocation through seven stages:
+
+- **Mutating webhook:** detects GPU requests, routes pod to HAMi scheduler
+- **Scheduler:** selects GPU and node via HAMi scheduler extender
+- **HAMi driver:** generates device config
+- **Container runtime:** reads config, injects HAMi-Core library
+- **HAMi core:** enforces isolation in-process via symbolic hijacking
+
+@col
+
+```dot
+digraph G {
+  rankdir=TB
+  node [shape=box style="rounded,filled" margin="0.25,0.18"]
+
+  pod [label="Pod submitted" class="yellow"]
+  webhook [label="Mutating webhook" class="cyan"]
+  sched [label="Scheduler" class="cyan"]
+  device [label="HAMi driver" class="cyan"]
+
+  runtime [label="Container runtime" class="yellow"]
+  core [label="HAMi core" class="cyan"]
+  workload [label="Workload (isolated GPU)" class="green"]
+
+  { rank=same; pod; runtime }
+  { rank=same; webhook; core }
+  { rank=same; sched; workload }
+
+  pod -> webhook [label="set scheduler"]
+  webhook -> sched [label="select GPU+node"]
+  sched -> device [label="allocate device"]
+
+  device -> runtime [label="device config" constraint=false style=dashed]
+
+  runtime -> core [label="enforce isolation"]
+  core -> workload [label="sees isolated GPU"]
+}
+```
+
+---
+
 ## Lab setup: real scheduler, fake GPUs
 
 ![Workshop lab architecture](assets/containerdays/containerdays-lab-architecture.svg)
