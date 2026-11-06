@@ -2,9 +2,9 @@
 
 Everything below can be lifted into the ContainerDays talk deck. Paths relative to repo root.
 
-> **Source rule:** `kcd_vietnam.md` (KCD Vietnam 2026, Viettel Cloud) is the source for our own measurements. Do NOT use `drawings.md` (a chart scratchpad copied from it, not data), `hami_intro.md` or `hami_enterprise.md` (older decks) as references.
+> **Source rule:** `kcd_vietnam.deck.md` (KCD Vietnam 2026, Viettel Cloud) is the source for our own measurements. Do NOT use `drawings.deck.md` (a chart scratchpad copied from it, not data), `hami_intro.deck.md` or `hami_enterprise.deck.md` (older decks) as references.
 
-## Own measurements (kcd_vietnam.md, Viettel Cloud)
+## Own measurements (kcd_vietnam.deck.md, Viettel Cloud)
 
 - Two real jobs each held a whole H200 (141 GB): time-series inference used 1 GB, SM 16-18%; YOLO11 training used 39 GB → ~100 GB free.
 - Throughput: native 20.7 req/s per card @ p95 160 ms → HAMi + KEDA 71.1 req/s (10 replicas) = 3.4x per card; SM 18% → 31% → 54% → 100% at 1/2/5/10 replicas, same latency. Same 71 req/s natively needs ~3.4 cards → ~71% fewer cards, ~51% less power, ~$7k/month at $4/GPU-h (example).
@@ -12,18 +12,18 @@ Everything below can be lifted into the ContainerDays talk deck. Paths relative 
 - Notebook capping: 70% cores → 1h00 → 1h20 (+20 min, on purpose).
 - One H200 across a day: notebook fixed ~30%; morning time-series x6; office hours LLM inference x5 (<20B); night more training.
 - Stability (hidden backup slide): epoch-time CV 1% alone, 19% shared no cap, 9% shared with `force` cap. Caveat: cap isolates stability, not throughput; for hard throughput isolation use MIG.
-- Charts for all of the above are seaborn blocks in `kcd_vietnam.md` (copy as-is).
+- Charts for all of the above are seaborn blocks in `kcd_vietnam.deck.md` (copy as-is).
 
 ## HAMi mechanism slides
 
-- `ossummit_korea.md` (~line 253): compute slicing mechanisms per vendor (interception token bucket vs MPS/CU masking vs hardware-fenced vXPU/vDCU vs no hook point).
-- `ossummit_korea.md` (~line 504): three pieces needed: capacity reporting, allocation, enforcement; DRA as the clean path.
-- `ossummit_korea.md` (~line 770) / `coscup_2026.md` (~line 393): consumable resources (MiB, % of SMs); nvidia-smi in the pod shows the slice; same semantics on DRA since v2.8.
-- `gpu_workshop.md` (~line 208): component list: scheduler extender, webhook, device plugin, HAMi-core (`libvgpu.so`), vGPUmonitor.
-- `gpu_workshop.md` (~line 346): `libvgpu.so` via `ld.so.preload`.
-- `gpu_workshop.md` (~line 428): "One isolation layer, several scheduling brains" + `assets/containerdays/containerdays-scheduling-brains.svg`; KAI resource-isolator delivers the same libvgpu.so.
-- `gpu_workshop.md` (~line 502): DRA: HAMi-DRA mutating webhook rewrites `nvidia.com/gpu` into ResourceClaims; K8s 1.34+ with DRA Consumable Capacity + CDI; ResourceClaimTemplate mode for Kueue.
-- Comparison tables MIG vs HAMi vs NVIDIA DRA: `coscup_2026.md` (~line 376), `kcd_vietnam.md` (~line 572).
+- `ossummit_korea.deck.md` (~line 253): compute slicing mechanisms per vendor (interception token bucket vs MPS/CU masking vs hardware-fenced vXPU/vDCU vs no hook point).
+- `ossummit_korea.deck.md` (~line 504): three pieces needed: capacity reporting, allocation, enforcement; DRA as the clean path.
+- `ossummit_korea.deck.md` (~line 770) / `coscup_2026.deck.md` (~line 393): consumable resources (MiB, % of SMs); nvidia-smi in the pod shows the slice; same semantics on DRA since v2.8.
+- `gpu_workshop.deck.md` (~line 208): component list: scheduler extender, webhook, device plugin, HAMi-core (`libvgpu.so`), vGPUmonitor.
+- `gpu_workshop.deck.md` (~line 346): `libvgpu.so` via `ld.so.preload`.
+- `gpu_workshop.deck.md` (~line 428): "One isolation layer, several scheduling brains" + `assets/containerdays/containerdays-scheduling-brains.svg`; KAI resource-isolator delivers the same libvgpu.so.
+- `gpu_workshop.deck.md` (~line 502): DRA: HAMi-DRA mutating webhook rewrites `nvidia.com/gpu` into ResourceClaims; K8s 1.34+ with DRA Consumable Capacity + CDI; ResourceClaimTemplate mode for Kueue.
+- Comparison tables MIG vs HAMi vs NVIDIA DRA: `coscup_2026.deck.md` (~line 376), `kcd_vietnam.deck.md` (~line 572).
 
 ## DRA images
 
@@ -44,8 +44,8 @@ Everything below can be lifted into the ContainerDays talk deck. Paths relative 
 
 - `research/cross-platform-observability/`: allocation != usage; HAMi-DRA metrics are accounting; vendor telemetry gaps.
 - `research/ossummit-europe-agents/followups.md`: `CUDA_DISABLE_CONTROL` bypass; soft slicing is not a security boundary.
-- `kcd_vietnam.md`: Viettel Cloud AI notebook production blueprint.
-- `snow_corp_cncf.md`: earlier SNOW Corp deck.
+- `kcd_vietnam.deck.md`: Viettel Cloud AI notebook production blueprint.
+- `snow_corp_cncf.deck.md`: earlier SNOW Corp deck.
 
 ## Deck conventions (workshop deck, same event)
 

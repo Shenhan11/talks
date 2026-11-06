@@ -265,7 +265,7 @@ drv -> gpu
 
 <!--
 1.25 min. Still promise 2, plus promise 7: every vendor's chips as first-class citizens.
-The tenant always asks the same way. Underneath, the mechanism depends on the silicon (per-vendor map from the OSS Summit Korea talk, ossummit_korea.md:253):
+The tenant always asks the same way. Underneath, the mechanism depends on the silicon (per-vendor map from the OSS Summit Korea talk, ossummit_korea.deck.md:253):
 - NVIDIA and Ascend have no hardware compute cap usable for this, so it is done in user space: HAMi-core on NVIDIA, vNPU-Core on Ascend. China Merchants Bank describes vNPU-Core as a token bucket for compute plus user-space memory management, 1 GB memory and 1% compute granularity.
 - AMD CU masking and NVIDIA MPS are caps the hardware scheduler honours, static per process.
 - Kunlunxin vXPU and Hygon vDCU are hardware-fenced: coarse, but the silicon itself stops a pod going past its partition. MIG belongs here too.
@@ -358,7 +358,7 @@ Odd-card allocation across dual-chip modules caused driver errors. HAMi's device
 
 <!--
 1.25 min. Promise 4: how DRA fits, and where it falls short.
-HAMi-DRA (github.com/Project-HAMi/HAMi-DRA) is a mutating webhook. It rewrites the classic nvidia.com/gpu, gpumem, gpucores requests into DRA ResourceClaims, so existing Pod specs keep working. Since HAMi v2.8 the same memory and compute % semantics exist as typed ResourceSlice capacities (memory step 1 MiB, cores 0-100; ossummit_korea.md:790-792). It needs Kubernetes 1.34+ with the DRA Consumable Capacity feature gate and CDI in the runtime. There is a ResourceClaimTemplate mode for Kueue admission.
+HAMi-DRA (github.com/Project-HAMi/HAMi-DRA) is a mutating webhook. It rewrites the classic nvidia.com/gpu, gpumem, gpucores requests into DRA ResourceClaims, so existing Pod specs keep working. Since HAMi v2.8 the same memory and compute % semantics exist as typed ResourceSlice capacities (memory step 1 MiB, cores 0-100; ossummit_korea.deck.md:790-792). It needs Kubernetes 1.34+ with the DRA Consumable Capacity feature gate and CDI in the runtime. There is a ResourceClaimTemplate mode for Kueue admission.
 Where it falls short, honestly: none of the 11 CNCF case studies runs DRA sharing in production today. Sangfor lists joining the HAMi DRA ecosystem as future work. Claim metrics show what was reserved, not what is used. And a claim does not stop a process from allocating more memory: that is still libvgpu.so.
 My advice to a neocloud today: build on the device plugin path, keep the Pod API stable, move to DRA underneath when your Kubernetes version and your schedulers are ready. Users will not notice.
 -->
@@ -1124,7 +1124,7 @@ Share what is small, bursty, interactive or latency-tolerant. Keep big training 
 ---
 
 <!--
-Backup if asked "did you measure this yourselves". Own measurement, Viettel Cloud work (KCD Vietnam 2026 talk, kcd_vietnam.md). Two real jobs, each held a whole H200 (141 GB).
+Backup if asked "did you measure this yourselves". Own measurement, Viettel Cloud work (KCD Vietnam 2026 talk, kcd_vietnam.deck.md). Two real jobs, each held a whole H200 (141 GB).
 1) Time-series forecast, small model: 1 GB of 141 GB, SM 16-18%.
 2) YOLO11 defect-detection training, about 17k images: 39 GB. Batch is sized for accuracy, not to fill the card, so the ~100 GB left over is genuinely free.
 Many cards have no MIG at all (L40, L40S, A6000), so hardware partitioning is not even an option there.
@@ -1179,9 +1179,9 @@ ax.grid(False)
 ---
 
 <!--
-Backup, from the Viettel Cloud work (KCD Vietnam 2026 talk, kcd_vietnam.md). Time-series inference service, p95 held at 160 ms.
+Backup, from the Viettel Cloud work (KCD Vietnam 2026 talk, kcd_vietnam.deck.md). Time-series inference service, p95 held at 160 ms.
 Native: one pod per card, 20.7 req/s, SM 18%. With HAMi slices plus KEDA scaling to 10 replicas on the same card: 71.1 req/s at the same p95: 3.4x per card. SM goes 18 to 31 to 54 to 100% at 1, 2, 5, 10 replicas.
-The team challenged the baseline: raising the batch size from 32 to 512 left the GPU at 7-10%; one instance simply cannot fill an H200. This is the time-series service from the 1 GB job, a Chronos forecaster of about 200M parameters predicting infrastructure load (same 18% SM; kcd_vietnam.md:688,752), so a batch is a group of forecast requests per inference call. The source records only "batch->512", so say it that way if asked.
+The team challenged the baseline: raising the batch size from 32 to 512 left the GPU at 7-10%; one instance simply cannot fill an H200. This is the time-series service from the 1 GB job, a Chronos forecaster of about 200M parameters predicting infrastructure load (same 18% SM; kcd_vietnam.deck.md:688,752), so a batch is a group of forecast requests per inference call. The source records only "batch->512", so say it that way if asked.
 Cost framing (example only): the same 71 req/s natively needs about 3.4 cards, so roughly 71% fewer cards, about 51% less power, about $7k/month at an example $4 per GPU-hour. Example price, not a quote.
 -->
 
@@ -1283,7 +1283,7 @@ Honest attribution: SNOW attributes its cost savings to KEDA autoscaling; HAMi t
 ---
 
 <!--
-Backup for "how does a tenant ask for a slice". YAML from the workshop deck (gpu_workshop.md). HAMi's supported list, per the CETC case study.
+Backup for "how does a tenant ask for a slice". YAML from the workshop deck (gpu_workshop.deck.md). HAMi's supported list, per the CETC case study.
 -->
 
 ## Backup: the same request, any vendor

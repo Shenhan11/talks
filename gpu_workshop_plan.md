@@ -1,6 +1,6 @@
 # GPU Sharing on Kubernetes with HAMi: 45-minute Workshop Plan
 
-Status: draft v0.1, 2026-10-20. Owner: Reza Jelveh. Deck: `gpu_workshop.md`.
+Status: draft v0.1, 2026-10-20. Owner: Reza Jelveh. Deck: `gpu_workshop.deck.md`.
 
 Formats this plan covers:
 

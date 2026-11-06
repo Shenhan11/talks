@@ -49,7 +49,7 @@ Open: 'Raise your hand if you run GPUs on Kubernetes. Keep it up if you know you
 @subtitle Allocated is not used
 
 <!--
-Own measurement (Viettel Cloud work, drawings.md). Two real jobs, each held a WHOLE H200 (141 GB).
+Own measurement (Viettel Cloud work, drawings.deck.md). Two real jobs, each held a WHOLE H200 (141 GB).
 1) Time-series forecast, small model: 1 GB of 141 GB, SM 16-18%.
 2) YOLO11 defect-detection training, ~17k images: 39 GB. Batch is sized for accuracy, not to fill the card, so the ~100 GB left over is genuinely free.
 Don't rush '1 GB out of 141'. Pause.

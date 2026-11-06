@@ -484,7 +484,7 @@ beat 1/8: finer is not better (NIO)
 1.5 min. Inference endpoints and model APIs: pack replicas by GPU memory and autoscale them. Our own measurement on the H200, time-series inference service, p95 held at 160 ms.
 Native: one pod per card, 20.7 req/s, SM 18%. With HAMi slices plus KEDA scaling to 10 replicas on the same card: 71.1 req/s at the same p95. SM goes 18, 31, 54, 100% at 1, 2, 5, 10 replicas.
 Land it: HAMi does not make one pod faster. It fills the card that was sitting empty. For model APIs sold per token the same move is many models per card: Sangfor went from 1 to 8+ models per GPU.
-The team challenged the baseline: raising the batch size from 32 to 512 left the GPU at 7-10%; one instance simply cannot fill an H200. This is the time-series service from the 1 GB job, a Chronos forecaster of about 200M parameters predicting infrastructure load (same 18% SM; kcd_vietnam.md:688,752), so a batch is a group of forecast requests per inference call. The source records only "batch->512", so say it that way if asked.
+The team challenged the baseline: raising the batch size from 32 to 512 left the GPU at 7-10%; one instance simply cannot fill an H200. This is the time-series service from the 1 GB job, a Chronos forecaster of about 200M parameters predicting infrastructure load (same 18% SM; kcd_vietnam.deck.md:688,752), so a batch is a group of forecast requests per inference call. The source records only "batch->512", so say it that way if asked.
 Cost framing (example only): the same 71 req/s natively needs about 3.4 cards, so roughly 71% fewer cards, about 51% less power, ~$7k/month at an example $4/GPU-hour.
 -->
 
@@ -715,7 +715,7 @@ Profile workloads first, not a preset ratio (CETC).
 
 <!--
 1.5 min. Promises 3 and 7: heterogeneous scheduling, every vendor's accelerators as first-class citizens. Every neocloud product sits on whatever hardware the supply chain delivers.
-The API stays one shape (memory + cores per vendor resource name); what stops a pod using more underneath depends on what the chip gives you (per-vendor map from the OSS Summit Korea talk, ossummit_korea.md:253):
+The API stays one shape (memory + cores per vendor resource name); what stops a pod using more underneath depends on what the chip gives you (per-vendor map from the OSS Summit Korea talk, ossummit_korea.deck.md:253):
 - NVIDIA and Ascend have no hardware compute cap, so HAMi intercepts in user space (token bucket, 1%). CMB used HAMi's vNPU-core (VMPO Core) for user-space partitioning: token bucket plus user-space memory management, down to 1 GB memory / 1% compute.
 - AMD CU masking and NVIDIA MPS are caps the hardware scheduler honours, static per process.
 - Kunlunxin vXPU, Hygon vDCU and MIG are hardware-fenced: coarse, but the silicon itself stops a pod going past its partition.
@@ -757,7 +757,7 @@ Paired allocation on supernodes: **100% hardware pool utilization**, cross-machi
 
 <!--
 1.5 min. Promise 4: how DRA fits, and where it falls short.
-Fits: HAMi-DRA (github.com/Project-HAMi/HAMi-DRA) is a mutating webhook that rewrites nvidia.com/gpu, gpumem, gpucores requests into DRA ResourceClaims. Kubernetes 1.34+ with the DRA Consumable Capacity feature gate and CDI in the runtime. Since HAMi v2.8 the same semantics exist on the DRA path: typed capacities in ResourceSlices (memory step 1 MiB, cores 0-100; ossummit_korea.md:790-792). A ResourceClaimTemplate mode exists for Kueue admission. Your pod YAML does not change.
+Fits: HAMi-DRA (github.com/Project-HAMi/HAMi-DRA) is a mutating webhook that rewrites nvidia.com/gpu, gpumem, gpucores requests into DRA ResourceClaims. Kubernetes 1.34+ with the DRA Consumable Capacity feature gate and CDI in the runtime. Since HAMi v2.8 the same semantics exist on the DRA path: typed capacities in ResourceSlices (memory step 1 MiB, cores 0-100; ossummit_korea.deck.md:790-792). A ResourceClaimTemplate mode exists for Kueue admission. Your pod YAML does not change.
 Falls short today:
 - DRA reserves the slice, but on its own nothing stops the pod using more of the card. HAMi-core (or the vendor mechanism from the mixed-fleet slide) is what holds it to the slice.
 - Claims are accounting: they tell you what was reserved, not what is used.
@@ -1286,7 +1286,7 @@ spec:
 ---
 
 <!--
-All at cncf.io/case-studies/?_sft_lf-project=hami (read 2026-10-24). Own measurements: Viettel Cloud H200 work (KCD Vietnam 2026 talk, kcd_vietnam.md).
+All at cncf.io/case-studies/?_sft_lf-project=hami (read 2026-10-24). Own measurements: Viettel Cloud H200 work (KCD Vietnam 2026 talk, kcd_vietnam.deck.md).
 -->
 
 ## Backup: sources

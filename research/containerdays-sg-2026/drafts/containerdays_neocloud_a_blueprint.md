@@ -744,7 +744,7 @@ ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
 - SM 18% → 31% → 54% → 100% at 1 / 2 / 5 / 10 replicas. Bigger batches (32 → 512) left the GPU at 7-10%
 
 <!--
-Backup if asked "did you measure this yourselves". From drawings.md / Viettel Cloud deck.
+Backup if asked "did you measure this yourselves". From drawings.deck.md / Viettel Cloud deck.
 Same 71 req/s natively needs ~3.4 cards: ~71% fewer cards, ~51% less power, ~$7k/month at an example $4/GPU-h (example price, not a quote).
 HAMi does not make one pod faster; it fills the card that was idle.
 -->
@@ -779,7 +779,7 @@ ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
 The `force` cap halves the jitter. It isolates stability, not throughput: for hard throughput isolation, use MIG.
 
 <!--
-Backup if asked about noisy neighbours. Own measurement (drawings.md): CV = std dev / mean of epoch time. Alone ~1%, shared with bursty inference and no cap 19%, shared with force cap 9%.
+Backup if asked about noisy neighbours. Own measurement (drawings.deck.md): CV = std dev / mean of epoch time. Alone ~1%, shared with bursty inference and no cap 19%, shared with force cap 9%.
 -->
 
 ---
@@ -816,7 +816,7 @@ resources:
 Supported per CETC case study: NVIDIA, Ascend, Cambricon, Hygon, Iluvatar CoreX, Moore Threads, MetaX, Enflame, Kunlunxin, AWS Neuron, Vastai.
 
 <!--
-Backup for "how does a tenant ask for a slice". YAML from the workshop deck (gpu_workshop.md).
+Backup for "how does a tenant ask for a slice". YAML from the workshop deck (gpu_workshop.deck.md).
 -->
 
 ---

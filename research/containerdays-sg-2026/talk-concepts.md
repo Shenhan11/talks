@@ -4,8 +4,8 @@
 
 | Deck | File | Structure |
 |---|---|---|
-| Story | `containerdays_neocloud_story.md` | C's one-H200 day carries the talk, A's mechanism detail inside it, B's limits and evidence to close. 17 main slides, 5 backups |
-| Blueprint | `containerdays_neocloud_blueprint.md` | Abstract order on A's five layers, B's production evidence per layer. 17 main slides, 7 backups |
+| Story | `containerdays_neocloud_story.deck.md` | C's one-H200 day carries the talk, A's mechanism detail inside it, B's limits and evidence to close. 17 main slides, 5 backups |
+| Blueprint | `containerdays_neocloud_blueprint.deck.md` | Abstract order on A's five layers, B's production evidence per layer. 17 main slides, 7 backups |
 
 The original concepts:
 

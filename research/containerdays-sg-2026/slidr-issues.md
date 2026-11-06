@@ -18,5 +18,5 @@ Found by the deck agents on 2026-10-24 and worked around in the decks. Issues 1-
 | 12 | Graphviz node `class="cyan"/"green"` renders grey under `kubecon_japan` | explicit fillcolor/color | low (fixed in slidr `7c2a96e`) |
 | 13 | `two-col` with a left column taller than the slide: flex children shrink and overlap | shorter bullets | low |
 | 14 | `seaborn_theme: kubecon_japan` sets `patch.force_edgecolor` with the red accent and darkgrid lines | charts set `force_edgecolor` False, `ax.grid(False)` | low |
-| 15 | Title-slide speaker link icons render dark on the dark gradient (also in `gpu_workshop.md`) | not fixed | cosmetic |
+| 15 | Title-slide speaker link icons render dark on the dark gradient (also in `gpu_workshop.deck.md`) | not fixed | cosmetic |
 | 16 | Icons with `cls=accent-*` inside table cells look the same colour as text in PDF | not investigated | cosmetic |

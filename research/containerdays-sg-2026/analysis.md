@@ -1,6 +1,6 @@
 # Cross-case analysis for the talk
 
-Sources: `case-studies.md` (11 CNCF case studies, 10 organisations), own measurements from the KCD Vietnam 2026 talk (`../../kcd_vietnam.md`).
+Sources: `case-studies.md` (11 CNCF case studies, 10 organisations), own measurements from the KCD Vietnam 2026 talk (`../../kcd_vietnam.deck.md`).
 
 ## 1. Whole-card baselines: 5-20%, everywhere
 
@@ -77,7 +77,7 @@ Workshop deck already has this framing: `assets/containerdays/containerdays-sche
 - CMB topology: supernode paired allocation (odd cards across modules → driver errors) → 100% pool usable; 3-tier network scoring → cross-machine -30%.
 - DaoCloud: NVIDIA + other vendors' accelerators under one abstraction; proprietary vGPU licensing avoided.
 - SF: Ascend, Kunlun, Sunway.
-- Vendor mechanism map (from `ossummit_korea.md` speaker notes): NVIDIA/Ascend no hardware compute cap → user-space interception (token bucket, 1%); AMD CU masking and NVIDIA MPS → hardware-honoured static caps; Kunlunxin vXPU / Hygon vDCU → hardware-fenced, coarse; DeepX/Axelera → no hook point.
+- Vendor mechanism map (from `ossummit_korea.deck.md` speaker notes): NVIDIA/Ascend no hardware compute cap → user-space interception (token bucket, 1%); AMD CU masking and NVIDIA MPS → hardware-honoured static caps; Kunlunxin vXPU / Hygon vDCU → hardware-fenced, coarse; DeepX/Axelera → no hook point.
 
 ## 7. Neocloud blueprint (DaoCloud D.run)
 

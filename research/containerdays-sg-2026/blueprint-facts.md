@@ -6,7 +6,7 @@ Paths are relative to /home/neocloud/projects/talks. Chart = references/HAMi/cha
 
 Names use `fullname` (_helpers.tpl:13-26). If the release name contains the chart name, fullname = release name, so release `hami` gives `hami-scheduler` and `hami-device-plugin`. README.md confirms the pod names `hami-device-plugin` and `hami-scheduler` (references/HAMi/README.md:132).
 
-- **Namespace**: the chart uses the release namespace (`hami-vgpu.namespace`, _helpers.tpl:29-33). The documented install is `helm install hami hami-charts/hami -n kube-system` (references/HAMi/README.md:123; website/docs/userguide/configure.md:65). Viettel excludes `hami-system` from Kyverno, so they ran HAMi in `hami-system` (kcd_vietnam.md:1013). **kube-system is a convention, not a chart default.**
+- **Namespace**: the chart uses the release namespace (`hami-vgpu.namespace`, _helpers.tpl:29-33). The documented install is `helm install hami hami-charts/hami -n kube-system` (references/HAMi/README.md:123; website/docs/userguide/configure.md:65). Viettel excludes `hami-system` from Kyverno, so they ran HAMi in `hami-system` (kcd_vietnam.deck.md:1013). **kube-system is a convention, not a chart default.**
 - **Scheduler**: Deployment `{{fullname}}-scheduler` (templates/scheduler/deployment.yaml:8-10) with two containers:
   - `kube-scheduler`: runs only if `scheduler.kubeScheduler.enabled` (deployment.yaml:49; values.yaml:~130).
   - `vgpu-scheduler-extender`: command `scheduler` (deployment.yaml:85,116-117). It hosts the filter/bind extender, the `/webhook` endpoint and the metrics.
@@ -33,7 +33,7 @@ Names use `fullname` (_helpers.tpl:13-26). If the release name contains the char
   - Injects env `CUDA_DEVICE_MEMORY_LIMIT_<idx>=<N>m` (from gpumem) and `CUDA_DEVICE_SM_LIMIT=<pct>` (from gpucores).
   - libvgpu overrides `dlsym` to hook specific cu*/nvml* calls (gpu-virtualization.md:71,170-180).
   - Standalone HAMi-core usage: `LD_PRELOAD=./libvgpu.so`, `CUDA_DEVICE_MEMORY_LIMIT`, `CUDA_DEVICE_SM_LIMIT` (references/HAMi-core/README.md:56,60-68).
-  - Viettel deck's own wording: "HAMi-Core library injected by the container runtime" (kcd_vietnam.md:217-220); libvgpu is an `LD_PRELOAD` interposer needing glibc (kcd_vietnam.md:1073).
+  - Viettel deck's own wording: "HAMi-Core library injected by the container runtime" (kcd_vietnam.deck.md:217-220); libvgpu is an `LD_PRELOAD` interposer needing glibc (kcd_vietnam.deck.md:1073).
 - **Other chart pieces**:
   - Optional mock device plugin DaemonSet (templates/device-plugin/daemonsetmock.yaml; values mockDevicePlugin.enabled: false).
   - Optional lupine remote-GPU DaemonSet (daemonsetlupine.yaml; values.yaml:597).
@@ -54,16 +54,16 @@ Names use `fullname` (_helpers.tpl:13-26). If the release name contains the char
   - `numa`: chained sort key
   - Comma-separated chains are valid, e.g. `binpack,numa`, `mutex,topology-aware` (util.go:315-318; util_test.go:93-97).
   - An unrecognised annotation value is ignored with a warning and the configured default stands (util.go:358-378).
-- **Topology-aware**: setting `gpuSchedulerPolicy: topology-aware` makes the chart add env `ENABLE_TOPOLOGY_SCORE=true` to the device plugin (daemonsetnvidia.yaml:169-171). The Viettel/KCD deck says "binpack, spread, topology-aware" (kcd_vietnam.md:95,558).
+- **Topology-aware**: setting `gpuSchedulerPolicy: topology-aware` makes the chart add env `ENABLE_TOPOLOGY_SCORE=true` to the device plugin (daemonsetnvidia.yaml:169-171). The Viettel/KCD deck says "binpack, spread, topology-aware" (kcd_vietnam.deck.md:95,558).
 - **Per-pod annotations, exact spelling** (pkg/util/types.go:87,89):
   - `hami.io/node-scheduler-policy`
   - `hami.io/gpu-scheduler-policy`
   - Also `hami.io/device-scoring-weights` (e.g. `"slot=1,core=1,memory=3"`, types.go:91; configure.md:85) and `hami.io/numa-alignment` (best-effort|strict, types.go:95; values.yaml:393-395).
   - Docs table: configure.md:83-84. YAML example: gpu-virtualization.md:197-199.
-  - Workshop deck table: gpu_workshop.md:363-364; example `hami.io/gpu-scheduler-policy: spread` at gpu_workshop.md:401.
+  - Workshop deck table: gpu_workshop.deck.md:363-364; example `hami.io/gpu-scheduler-policy: spread` at gpu_workshop.deck.md:401.
 - **DOC CONFLICT**: website/docs/userguide/nvidia-device/scheduling-policy.md:74 says only node-level policy can be overridden per pod. Source (util.go:358-378), configure.md:84 and the dynamic-MIG example (userguide/nvidia-device/examples/dynamic-mig-example.md:13-14) show GPU-level per-pod override works. Trust the source.
 - **DOC CONFLICT**: scheduling-policy.md:15,75 mention `numa-first` as "not yet implemented". The source uses `numa` as a sort key, not `numa-first`.
-- **Node score formula** (gpu-virtualization.md, section "Node Scheduling Strategy"): `(UsedDevices/Total + UsedCompute/Total + UsedVRAM/Total) x 10`. Binpack picks the higher score, spread the lower. Binpack = free whole machines for training; spread = online inference HA (kcd_vietnam.md:533-536).
+- **Node score formula** (gpu-virtualization.md, section "Node Scheduling Strategy"): `(UsedDevices/Total + UsedCompute/Total + UsedVRAM/Total) x 10`. Binpack picks the higher score, spread the lower. Binpack = free whole machines for training; spread = online inference HA (kcd_vietnam.deck.md:533-536).
 
 ## 3. Pod resource names, type selection, compute policy
 
@@ -75,7 +75,7 @@ Names use `fullname` (_helpers.tpl:13-26). If the release name contains the char
   - `nvidia.com/priority`
   - Defaults in device-configmap.yaml:24-26: `defaultMemory: 0` (0 = 100% of device), `defaultCores: 0`, `defaultGPUNum: 1` (semantics: configure.md:32-34). `memoryFactor: 1` (device-configmap.yaml:28; configure.md:35).
   - If `gpumem`/`gpucores` is set without `nvidia.com/gpu`, the webhook adds `nvidia.com/gpu` with the default count (configure.md:34).
-  - Viettel's user YAML (kcd_vietnam.md:671-673): `nvidia.com/gpu: 1`, `gpumem: 2000 # MB - a hard limit`, `gpucores: 30 # % - best effort`.
+  - Viettel's user YAML (kcd_vietnam.deck.md:671-673): `nvidia.com/gpu: 1`, `gpumem: 2000 # MB - a hard limit`, `gpucores: 30 # % - best effort`.
 - **Ascend** (values.yaml:634-665 customresources; device-configmap.yaml:142-270). Each chip has three resources, e.g. `huawei.com/Ascend910B` is not a name; the real names are:
   - 910A: `huawei.com/Ascend910A`, `-memory`, `-core`
   - 910B2: `huawei.com/Ascend910B2`, `-memory`, `-core`
@@ -118,7 +118,7 @@ Names use `fullname` (_helpers.tpl:13-26). If the release name contains the char
   - Mechanism 2, cluster-wide: `devices.nvidia.gpuCorePolicy: default` (values.yaml:595; device-configmap.yaml:33). If it is not `default`, the webhook injects the env into every GPU container (device.go:396-405).
   - Mechanism 3: `devicePlugin.disablecorelimit: "false"` (values.yaml:438; passed as `--disable-core-limit`, daemonsetnvidia.yaml:121).
   - `CUDA_DISABLE_CONTROL=true` turns HAMi-core off entirely, for debugging (configure.md:93).
-  - Viettel's measurement (kcd_vietnam.md:992-994): gpumem is "a real limit"; gpucores default is "only a hint" (10% and 90% ran the same speed); gpucores with `force` is "a real cap" (70% cores: run takes 1h20, not 1h). Takeaway: "promise memory, do not promise compute" (kcd_vietnam.md:966).
+  - Viettel's measurement (kcd_vietnam.deck.md:992-994): gpumem is "a real limit"; gpucores default is "only a hint" (10% and 90% ran the same speed); gpucores with `force` is "a real cap" (70% cores: run takes 1h20, not 1h). Takeaway: "promise memory, do not promise compute" (kcd_vietnam.deck.md:966).
 
 ## 4. Quota
 
@@ -151,7 +151,7 @@ spec:
 - Scheduler: container port `metrics` = 9395 (values.yaml:57; deployment.yaml:189-190). Service port `monitor` 31993 (scheduler/service.yaml; values.yaml:284 `monitorPort: 31993`). `curl <scheduler-ip>:31993/metrics` (website/docs/userguide/monitoring/device-allocation.md:6-9).
 - vGPUmonitor: container 9394 (daemonsetnvidia.yaml:281-282), NodePort 31992 (monitorservice.yaml:19-23). `curl <GPU-node-ip>:31992/metrics` (real-time-device-usage.md:6-9). Both are NodePort by default in v2.10.0 (grafana-dashboard.md:34-41).
 - ServiceMonitors are available behind `prometheus.enabled` (values.yaml:684-685; device-plugin/servicemonitor.yaml:4,20; scheduler/servicemonitor.yaml).
-- Workshop shows ports as :9395 scheduler (allocation) and :9394 monitor (usage) (gpu_workshop.md:535-536,545,554).
+- Workshop shows ports as :9395 scheduler (allocation) and :9394 monitor (usage) (gpu_workshop.deck.md:535-536,545,554).
 
 **Scheduler = ALLOCATION** (cmd/scheduler/metrics.go; not real utilization, device-allocation.md:40):
 - `hami_gpu_memory_limit_bytes` (:162), `hami_gpu_core_limit_ratio` (:167)
@@ -171,9 +171,9 @@ spec:
 - Host: `hami_host_gpu_memory_used_bytes` (:58), `hami_host_gpu_utilization_ratio` (:64, 0-100), `hami_host_gpu_memory_controller_utilization_ratio` (:70), `hami_host_gpu_temperature_celsius` (:76), `hami_host_gpu_power_usage_watts` (:82), `hami_host_gpu_ecc_errors_total` (:88)
 - Per container: `hami_vgpu_memory_used_bytes` (:93), `hami_vgpu_memory_limit_bytes` (:99), `hami_container_device_memory_bytes` (:104), `hami_container_device_utilization_ratio` (:109)
 - Docs table (real-time-device-usage.md:16-18,26-30) also lists `hami_container_last_kernel_elapsed_seconds`. v2.10.0 moved context/module/buffer sizes to `hami_vgpu_memory_context_bytes`, `hami_vgpu_memory_module_bytes`, `hami_vgpu_memory_buffer_bytes` (real-time-device-usage.md:37).
-- Viettel: "per-pod GPU metrics (DCGM can't, only per physical GPU)" (kcd_vietnam.md:654,664). 2.9 renamed every metric and dashboards went empty (kcd_vietnam.md:1007,1016).
-- Workshop deck lists the names without the `hami_` prefix (gpu_workshop.md:546-559).
-- Old WebUI names (`hami_memory_size`, `hami_core_util`, `hami_container_vgpu_allocated`, ...) are what HAMi-WebUI queries (references/HAMi-WebUI/packages/web/projects/vgpu/metrics/query-contract.mjs:2-12; server/internal/exporter/metrics.go:84,104,149). gpu_workshop.md:634-636 says a PrometheusRule is needed to translate.
+- Viettel: "per-pod GPU metrics (DCGM can't, only per physical GPU)" (kcd_vietnam.deck.md:654,664). 2.9 renamed every metric and dashboards went empty (kcd_vietnam.deck.md:1007,1016).
+- Workshop deck lists the names without the `hami_` prefix (gpu_workshop.deck.md:546-559).
+- Old WebUI names (`hami_memory_size`, `hami_core_util`, `hami_container_vgpu_allocated`, ...) are what HAMi-WebUI queries (references/HAMi-WebUI/packages/web/projects/vgpu/metrics/query-contract.mjs:2-12; server/internal/exporter/metrics.go:84,104,149). gpu_workshop.deck.md:634-636 says a PrometheusRule is needed to translate.
 - DRA mode metrics: `hami_dra_gpu_core_limit_ratio`, `hami_dra_gpu_memory_limit_bytes`, `hami_dra_gpu_core_allocated_ratio`, `hami_dra_gpu_memory_allocated_bytes`, `hami_dra_vgpu_core_allocated_ratio`, `hami_dra_vgpu_memory_allocated_bytes` (references/HAMi-DRA/docs/MONITOR.md:113-124). The monitor serves :8080 and health :8000 (MONITOR.md:145-153; monitor-deployment.yaml:46-50). README example NodePort 31995 (README.md:107,113). **NOT FOUND**: a DRA-mode real-time-usage exporter equivalent to vGPUmonitor.
 
 ## 6. Node and device config keys
@@ -220,7 +220,7 @@ spec:
   - `migProfileAllowlist` defaults per model: A30, A100 40/80GB, H100 80/94GB, H20, H200, B200, RTX PRO 6000 Blackwell (device-configmap.yaml:36-60). Example A30 profiles `1g.6gb, 2g.12gb, 4g.24gb`.
   - MIG mode change may need GPU reset or node reboot; cordon and drain first (dynamic-mig-support.md:54,217). Scheduler publishes `hami_node_gpu_mig_instance_info` (metrics.go:197).
   - Restart the scheduler and device plugin after config change (dynamic-mig-support.md:91).
-- Viettel's framing: many of their GPUs (L40, L40S, A6000) have no MIG (kcd_vietnam.md:738,692); MIG is the "hard throughput isolation" option (kcd_vietnam.md:949). Comparison table: kcd_vietnam.md:572-581.
+- Viettel's framing: many of their GPUs (L40, L40S, A6000) have no MIG (kcd_vietnam.deck.md:738,692); MIG is the "hard throughput isolation" option (kcd_vietnam.deck.md:949). Comparison table: kcd_vietnam.deck.md:572-581.
 
 ## 8. HAMi-DRA
 
@@ -238,20 +238,20 @@ spec:
   - Optional monitor (enabled by default) (README.md:14,94-113). Fake driver for testing without hardware (docs/fake-dra-driver.md).
   - Webhook failurePolicy default `Fail` (templates/webhook/mutatingwebhookconfiguration.yaml:34; values.yaml:141-143).
 - **NOT FOUND**: GA/beta/alpha status statement for HAMi-DRA itself, and a ResourceQuota story for DRA mode.
-- Viettel deck: "Move to DRA: keep the same isolation, swap the custom API for the standard Kubernetes one" (kcd_vietnam.md:1086). DRA ResourceClaim stable in K8s 1.34 (kcd_vietnam.md:149). Capability table (kcd_vietnam.md:572-581).
+- Viettel deck: "Move to DRA: keep the same isolation, swap the custom API for the standard Kubernetes one" (kcd_vietnam.deck.md:1086). DRA ResourceClaim stable in K8s 1.34 (kcd_vietnam.deck.md:149). Capability table (kcd_vietnam.deck.md:572-581).
 
-## 9. Viettel Cloud blueprint (kcd_vietnam.md)
+## 9. Viettel Cloud blueprint (kcd_vietnam.deck.md)
 
-Part 3 starts at kcd_vietnam.md:585.
+Part 3 starts at kcd_vietnam.deck.md:585.
 
-- **Platform** (kcd_vietnam.md:593-623): "Viettel Cloud AI-Native" is the AI/GPU platform; AI Notebooks with fractional GPU for dev and training; also inference serving. Pools: "**H200** pool (141 GB), plus **L40, L40S, A30, A6000, ...**" (:623). Speaker note: "GPUs are MIXED: 1 pool H200 + pools L40/L40S/A30/A6000" (:599).
+- **Platform** (kcd_vietnam.deck.md:593-623): "Viettel Cloud AI-Native" is the AI/GPU platform; AI Notebooks with fractional GPU for dev and training; also inference serving. Pools: "**H200** pool (141 GB), plus **L40, L40S, A30, A6000, ...**" (:623). Speaker note: "GPUs are MIXED: 1 pool H200 + pools L40/L40S/A30/A6000" (:599).
 - **Version and clusters** (:660): "**HAMi v2.9** on **both clusters**: the H200 pool, and the mixed-GPU one". Neighbours: Slinky, Inference, KEDA (:663; note :653 "2 schedulers, no conflict").
 - **Notebook sizes / SKUs**: NOT FOUND. The only size data:
   - Example request `nvidia.com/gpu: 1`, `gpumem: 2000`, `gpucores: 30` (:671-673).
   - Quote: "Our researchers do not write that - they pick the GPU size in our AI Notebooks, built on Kubeflow Notebooks" (:676).
   - A case measured at **~30% fence / 70% cores**, notebook 39 GB on a 141 GB H200 (:818). Daily pattern rows at :880-882 (notebook ~30% fixed, time-series x6 / LLM x5 / more training).
-- **Quotas**: NOT FOUND as a current design. Only roadmap: "**More teams** inside Viettel, with quota per team" (:1083). (An older deck claimed per-user quota; it is not a reference: use kcd_vietnam.md only.)
-- **Rollout steps**, "What It Really Took" (kcd_vietnam.md:998-1018):
+- **Quotas**: NOT FOUND as a current design. Only roadmap: "**More teams** inside Viettel, with quota per team" (:1083). (An older deck claimed per-user quota; it is not a reference: use kcd_vietnam.deck.md only.)
+- **Rollout steps**, "What It Really Took" (kcd_vietnam.deck.md:998-1018):
   - Install is a Helm chart, not the hard part (:1003).
   - Obstacle/solution table (:1011-1016):
     1. HAMi privileged access vs Kyverno: exclude `hami-system` from the pod-security policies (:1013).
@@ -284,5 +284,5 @@ Part 3 starts at kcd_vietnam.md:585.
 
 ## Verification notes
 
-- Line numbers come from grep output; some read-tool outputs elide line numbers, so :N values in kcd_vietnam.md and a few values.yaml entries (e.g. kubeScheduler.enabled ~:130, libPath ~:453, the ~:760 "71% fewer cards" line) are approximate. Re-grep before putting a line number on a slide.
+- Line numbers come from grep output; some read-tool outputs elide line numbers, so :N values in kcd_vietnam.deck.md and a few values.yaml entries (e.g. kubeScheduler.enabled ~:130, libPath ~:453, the ~:760 "71% fewer cards" line) are approximate. Re-grep before putting a line number on a slide.
 - NOT-WRITTEN notice: this content must be saved by the main agent, since no write tool was available.

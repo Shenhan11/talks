@@ -1,6 +1,6 @@
 # ContainerDays Singapore 2026: "10x Your Neocloud's GPU Utilization with HAMi"
 
-Talk slot: Tuesday, October 27, 2026 (same day as the 12:30 HAMi workshop, `gpu_workshop.md`).
+Talk slot: Tuesday, October 27, 2026 (same day as the 12:30 HAMi workshop, `gpu_workshop.deck.md`).
 Format: 30-minute slot (per the speaker, 2026-10-26; earlier notes said 25), Cloud Native / AI Infrastructure. Plan ~25 min of content plus Q&A.
 
 ## CFP as submitted

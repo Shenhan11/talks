@@ -24,8 +24,8 @@ make watch-<deck>       # watch and rebuild
 
 ## Decks
 
-- `snow_corp_cncf.md` - Shared GPU Scheduling (KubeCon Japan 2026)
-- `hami_intro.md` - HAMi Introduction and Features - Shared GPU Scheduling & Proactive Autoscaling (KubeCon Japan 2026)
+- `snow_corp_cncf.deck.md` - Shared GPU Scheduling (KubeCon Japan 2026)
+- `hami_intro.deck.md` - HAMi Introduction and Features - Shared GPU Scheduling & Proactive Autoscaling (KubeCon Japan 2026)
 
 ## Assets
 

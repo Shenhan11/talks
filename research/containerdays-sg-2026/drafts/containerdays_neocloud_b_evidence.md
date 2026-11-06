@@ -809,5 +809,5 @@ ax2.set_ylim(-22, 140)
 - Bigger batches did not help: 32 to 512, GPU still 7-10%
 
 <!--
-Backup, from the Viettel Cloud work (drawings.md). Native 20.7 req/s per card at p95 160 ms; HAMi plus KEDA with 10 replicas 71.1 req/s at the same latency: 3.4x per card. SM 18% to 31% to 54% to 100% at 1, 2, 5, 10 replicas. Same 71 req/s natively would need about 3.4 cards: about 71% fewer cards, about 51% less power, about $7k/month at an example $4 per GPU-hour.
+Backup, from the Viettel Cloud work (drawings.deck.md). Native 20.7 req/s per card at p95 160 ms; HAMi plus KEDA with 10 replicas 71.1 req/s at the same latency: 3.4x per card. SM 18% to 31% to 54% to 100% at 1, 2, 5, 10 replicas. Same 71 req/s natively would need about 3.4 cards: about 71% fewer cards, about 51% less power, about $7k/month at an example $4 per GPU-hour.
 -->

@@ -234,12 +234,12 @@ For each vendor and sharing mode, record collector/driver versions and actual /m
 
 ## Slide deck and reproduction
 
-The deck is [hami_cross_platform_observability.md](../../hami_cross_platform_observability.md). Style reference: snow_corp_cncf.md (kubecon_japan theme, dual branding, title/part dividers, cards, fade transitions); SNOW-specific branding and claims are excluded.
+The deck is [hami_cross_platform_observability.deck.md](../../hami_cross_platform_observability.deck.md). Style reference: snow_corp_cncf.deck.md (kubecon_japan theme, dual branding, title/part dividers, cards, fade transitions); SNOW-specific branding and claims are excluded.
 
 From the talks repository:
 
 ```bash
-uv run --no-project --with-editable ./slidr python -m slidr --pdf --dist hami_cross_platform_observability.md
+uv run --no-project --with-editable ./slidr python -m slidr --pdf --dist hami_cross_platform_observability.deck.md
 uv run --no-project --with-editable ./slidr --with pypdf python research/cross-platform-observability/verify.py
 python3 research/cross-platform-observability/scan.py
 ```

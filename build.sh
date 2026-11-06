@@ -2,10 +2,10 @@
 #
 # Build a deck without pdm.
 #
-#   ./build.sh                     # kcd_vietnam.md -> dist/kcd_vietnam.html
+#   ./build.sh                     # kcd_vietnam.deck.md -> dist/kcd_vietnam.html
 #   ./build.sh --pdf               # ... and dist/kcd_vietnam.pdf
-#   ./build.sh snow_corp_cncf.md   # another deck
-#   ./build.sh --pdf hami_intro.md
+#   ./build.sh snow_corp_cncf.deck.md   # another deck
+#   ./build.sh --pdf hami_intro.deck.md
 #
 # Requires: uv. On macOS also `brew install pango` (WeasyPrint needs it).
 #
@@ -27,7 +27,7 @@ for arg in "$@"; do
     *)  deck="$arg" ;;
   esac
 done
-deck="${deck:-kcd_vietnam.md}"
+deck="${deck:-kcd_vietnam.deck.md}"
 
 exec env \
   DYLD_FALLBACK_LIBRARY_PATH="${DYLD_FALLBACK_LIBRARY_PATH:-/opt/homebrew/lib}" \

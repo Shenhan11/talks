@@ -10,16 +10,16 @@ pdf: $(PDFS)
 release: pdf
 	gh release create $(TAG) $(PDFS) assets/demo/llm_test.mp4 --generate-notes
 
-dist/%.html: %.md
+dist/%.html: %.deck.md
 	@mkdir -p dist
-	pdm run decktile $<
+	pdm run slidr $<
 
-dist/%.pdf: %.md
+dist/%.pdf: %.deck.md
 	@mkdir -p dist
-	pdm run decktile --optimize-images --pdf $<
+	pdm run slidr --optimize-images --pdf $<
 
-watch-%: %.md
-	pdm run decktile -w $<
+watch-%: %.deck.md
+	pdm run slidr -w $<
 
 clean:
 	rm -rf dist/
