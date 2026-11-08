@@ -5,15 +5,10 @@ Talk slide decks built with [decktile](https://github.com/decktile/decktile).
 ## Setup
 
 ```bash
-git clone --recurse-submodules <this-repo>
-# or if already cloned:
-git submodule update --init
-pdm install
+uv tool install 'decktile[plot]'    # or: pipx install 'decktile[plot]'
 ```
 
-`pdm install` installs decktile from the `decktile/` submodule so `pdm run decktile`
-works from the project root. Diagrams are ` ```pdg ` blocks
-([predictygraph](https://github.com/predictygraph/predictygraph)); no graphviz needed.
+`make` runs `make check` first, which installs or upgrades decktile when needed.
 
 ## Build
 
