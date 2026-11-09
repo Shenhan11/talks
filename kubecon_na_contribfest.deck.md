@@ -870,7 +870,18 @@ Open questions for the room: who decides partitioning, the driver or the schedul
 
 ## Reserved is not used
 
-![Reservation vs usage](assets/containerdays/containerdays-reservation-usage.svg)
+```pdg
+graph layout=row theme=hami gap=70
+group alloc "Allocation · scheduler :9395" sub="what was reserved" layout=column gap=18 .blue {
+  acard "Per card" sub="hami_gpu_memory_allocated_bytes\nhami_gpu_core_allocated_ratio"
+  apod "Per pod" sub="hami_vgpu_memory_allocated_bytes\nhami_gpu_shared_count"
+}
+group usage "Usage · monitor :9394" sub="what is consumed" layout=column gap=18 .green {
+  ucnt "Per container" sub="hami_vgpu_memory_used_bytes\nhami_container_device_utilization_ratio"
+  ucard "Per card" sub="hami_host_gpu_memory_used_bytes\nhami_host_gpu_utilization_ratio"
+}
+alloc -> usage "alloc ≥ used"
+```
 
 HAMi exposes two metric sets. Keep them apart: one is a reservation, the other is usage.
 
