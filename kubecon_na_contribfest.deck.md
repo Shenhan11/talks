@@ -258,7 +258,41 @@ core -> gpu flow=forward
 css { group.bare { fill: none; stroke: none; padding: 0; } }
 ```
 
-Code: `cmd/scheduler`, `cmd/device-plugin`, `cmd/vGPUmonitor`, `pkg/device/<vendor>`
+<!--
+Code: cmd/scheduler, cmd/device-plugin, cmd/vGPUmonitor, pkg/device/<vendor>
+-->
+
+---
+
+## How the HAMi components work together
+
+```pdg
+graph layout=row theme=hami gap=56
+group cp "Control plane" layout=column gap=22 {
+  api "Kubernetes API" sub="Pods · node annotations"
+  hs "hami-scheduler Pod" sub="webhook + extender · :9395" .blue
+}
+group node "Each GPU node" layout=column gap=22 .green {
+  dp "hami-device-plugin" sub="DaemonSet · registers cards" .green
+  core "HAMi-core" sub="libvgpu.so in the container" .green
+  mon "vGPUmonitor" sub="usage · :9394" .green
+}
+group obs "Observability" layout=column gap=22 {
+  prom "Prometheus" sub="scrapes :9395 and :9394"
+  ui "HAMi-WebUI" sub="read-only dashboards" .blue
+}
+dp -> api "node-nvidia-register"
+api <-> hs "annotations"
+dp -> core "mounts"
+core -> mon "shared region"
+hs -> prom "allocated"
+mon -> prom "used"
+prom -> ui
+```
+
+<!--
+The device plugin writes card inventory into a node annotation. The scheduler reads it, picks a card and writes the allocation into Pod annotations. On the node the device plugin mounts HAMi-core, which records usage that vGPUmonitor exports. Prometheus scrapes both; the WebUI reads Prometheus and the API.
+-->
 
 ---
 
@@ -590,12 +624,35 @@ metadata:
 
 ---
 
-## Topology awareness
+## Where topology information comes from
 
-- The allocation annotation names an exact card UUID, and card choice is a topology decision: on a multi-GPU node it decides NVLink and PCIe locality
-- `fake-gpus.json` carries a `numa` field per card, the same hint the real device plugin records from the driver
-- Card-level spread keeps Pods on separate cards, binpack packs them onto one
-- Explicit topology-aware placement across cards and nodes is what the schedulers in the next lab add
+```pdg
+graph layout=column theme=hami gap=40
+group r1 layout=row gap=70 .bare {
+  nvml "NVML" sub="P2P links: NVLink · PCIe" border=glow
+  dp "hami-device-plugin" sub="ENABLE_TOPOLOGY_SCORE=true" .green
+  anno "Node annotation" sub="hami.io/node-nvidia-score"
+}
+group r2 layout=row gap=70 .bare {
+  hs "hami-scheduler" sub="policy topology-aware" .blue
+  pick "Card choice" sub="1 card: weakest links · N cards: best-linked set"
+}
+nvml -> dp "pair scores" flow=forward
+dp -> anno "patches" flow=forward
+anno -> hs "reads" flow=forward
+hs -> pick flow=forward
+css { group.bare { fill: none; stroke: none; padding: 0; } }
+```
+
+```yaml
+metadata:
+  annotations:
+    hami.io/gpu-scheduler-policy: topology-aware
+```
+
+<!--
+Same path as card inventory (hami.io/node-nvidia-register), a second annotation. Cluster-wide: --set scheduler.defaultSchedulerPolicy.gpuSchedulerPolicy=topology-aware. Asymmetric P2P data scores 0 and raises an AsymmetricGPUP2PLink node event. Node choice prefers the smallest node that fits. In the lab, fake-gpus.json carries a numa field per card. Code: pkg/device-plugin/nvidiadevice/nvinternal/plugin/register.go, pkg/device/nvidia/device.go.
+-->
 
 ---
 
@@ -705,9 +762,12 @@ spec:
               volcano.sh/vgpu-cores: 30
 ```
 
-- Takes the vGPU path instead of the standard HAMi chart: Volcano `deviceshare` plugin plus the volcano-vgpu-device-plugin
-- Queue `capability` caps vGPU memory per team, even when the node has room
-- Never run the standard HAMi device plugin and a Volcano vGPU plugin on the same node
+- Volcano `deviceshare` plugin plus the volcano-vgpu-device-plugin, not the standard HAMi chart
+- Queue `capability` caps vGPU memory per team
+
+<!--
+Never run the standard HAMi device plugin and a Volcano vGPU plugin on the same node.
+-->
 
 ---
 
@@ -883,8 +943,6 @@ group usage "Usage · monitor :9394" sub="what is consumed" layout=column gap=18
 alloc -> usage "alloc ≥ used"
 ```
 
-HAMi exposes two metric sets. Keep them apart: one is a reservation, the other is usage.
-
 ```bash
 ./metrics.sh scheduler   # allocation, port 9395
 ./metrics.sh monitor     # usage, port 9394
@@ -989,9 +1047,50 @@ Open http://localhost:3000.
 - This lab's scheduler and mock monitor expose the newer byte/ratio names (`hami_gpu_memory_limit_bytes`, `hami_host_gpu_utilization_ratio`, ...)
 - The PrometheusRule records one set as the other. Without it every allocation and usage panel stays empty
 
-::: notes{ tag="green" }
-Pre-pulling for an offline room: `--set image.*.digest=""` makes the chart use the v1.3.0 tags, which matters because digest references cannot be re-tagged after kind load.
-:::
+<!--
+Pre-pulling for an offline room: --set image.*.digest="" makes the chart use the v1.3.0 tags, which matters because digest references cannot be re-tagged after kind load.
+-->
+
+---
+
+## How the WebUI integrates
+
+```pdg
+graph layout=row theme=hami gap=48
+user "Browser" sub="port-forward :3000"
+group pod "HAMi-WebUI Pod" sub="one container, read-only" layout=column gap=18 .blue {
+  vue "Vue app" sub="static assets · :3000"
+  apih "Go API" sub="/api/vgpu/v1 · in-process" .blue
+  diag "Diagnostics" sub="ready · metrics · :8000"
+}
+group src "Data sources" layout=column gap=18 {
+  k8s "Kubernetes API" sub="nodes · Pods · device ConfigMap"
+  prom "Prometheus" sub="HAMi :9395 · :9394 · DCGM"
+}
+user -> vue
+vue -> apih
+apih -> k8s "list"
+apih -> prom "PromQL"
+```
+
+<!--
+WebUI v1.2.0+ needs HAMi 2.9.0 metric names. It never schedules or mutates anything; one instance per cluster, put auth in front of it.
+-->
+
+---
+
+## Hack on the WebUI
+
+```bash
+git clone https://github.com/Project-HAMi/HAMi-WebUI && cd HAMi-WebUI
+make bootstrap && make -C server bootstrap   # pnpm deps, Go generators (+ protoc)
+make -C server run   # Go API on :8000, uses kubeconfig + server/config/config.yaml
+make dev             # Vite on :3000, proxies /api/vgpu/v1 to :8000
+make verify && make -C server verify         # before the PR
+```
+
+- Point `server/config/config.yaml` at the lab's Prometheus (port-forward `:9090`)
+- Go, Node and pnpm versions are pinned in the repo. `git commit -s`
 
 ---
 
