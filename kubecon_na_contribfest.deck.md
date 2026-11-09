@@ -1048,7 +1048,10 @@ helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
 kubectl apply -f monitoring.yaml   # scrape :9395 and :9394
 kubectl apply -f webui-rules.yaml  # translate metric names for the WebUI
 helm upgrade --install my-hami-webui hami-webui/hami-webui \
-  --set externalPrometheus.enabled=true --set dcgm-exporter.enabled=false \
+  --set externalPrometheus.enabled=true \
+  --set-string externalPrometheus.address="http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090" \
+  --set-string serviceMonitor.additionalLabels.release=prometheus \
+  --set dcgm-exporter.enabled=false \
   -n kube-system --wait
 kubectl -n kube-system port-forward svc/my-hami-webui 3000:3000
 ```
@@ -1076,9 +1079,9 @@ Pre-pulling for an offline room: --set image.*.digest="" makes the chart use the
 ```pdg
 graph layout=row theme=hami gap=48
 user "Browser" sub="port-forward :3000"
-group pod "HAMi-WebUI Pod" sub="one container, read-only" layout=column gap=18 .blue {
+group pod "HAMi-WebUI Pod" sub="two containers, read-only" layout=column gap=18 .blue {
   vue "Vue app" sub="static assets · :3000"
-  apih "Go API" sub="/api/vgpu/v1 · in-process" .blue
+  apih "Go API" sub="/api/vgpu/v1 · separate container :8000" .blue
   diag "Diagnostics" sub="ready · metrics · :8000"
 }
 group src "Data sources" layout=column gap=18 {
