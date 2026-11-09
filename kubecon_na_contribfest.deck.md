@@ -1048,7 +1048,9 @@ helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
 kubectl apply -f monitoring.yaml   # scrape :9395 and :9394
 kubectl apply -f webui-rules.yaml  # translate metric names for the WebUI
 helm upgrade --install my-hami-webui hami-webui/hami-webui \
-  --set externalPrometheus.enabled=true --set dcgm-exporter.enabled=false \
+  --set externalPrometheus.enabled=true \
+  --set-string externalPrometheus.address="http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090" \
+  --set dcgm-exporter.enabled=false \
   -n kube-system --wait
 kubectl -n kube-system port-forward svc/my-hami-webui 3000:3000
 ```
