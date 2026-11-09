@@ -1071,4 +1071,4 @@ Contributor Countries
 @subtitle github.com/Project-HAMi/HAMi · project-hami.io · lab: github.com/Project-HAMi/hami-workshop
 
 @speaker name="Reza Jelveh" role="Global Market & Solution Architecture, Dynamia AI" github=github.com/fishman linkedin=linkedin.com/in/rezajelveh
-@speaker name="Jimmy Song" role="VP of Open Source Ecosystem" github=github.com/rootsongjc linkedin=linkedin.com/in/jimmysongio
+@speaker name="Mengxuan Li" role="CTO, Dynamia AI  -  HAMi maintainer"
