@@ -367,7 +367,9 @@ Produces HAMi's usage metrics (normally from vGPUmonitor and HAMi-core) from a l
 :::
 :::
 
-What you do **not** get without a GPU: memory and compute isolation inside the container. That part is HAMi-core, shown live on a real card in the wrap-up.
+<!--
+What you do not get without a GPU: memory and compute isolation inside the container. That part is HAMi-core, shown live on a real card in the wrap-up.
+-->
 
 ---
 
