@@ -299,7 +299,28 @@ HAMi-Core intercepts at the CUDA and NVML layer, above the kernel driver.
 
 ## Lab setup: real scheduler, fake GPUs
 
-![Workshop lab architecture](assets/containerdays/containerdays-lab-architecture.svg)
+```pdg
+graph layout=row theme=hami gap=48
+you "You" sub="laptop · kubectl"
+group kind "kind cluster hami-lab" layout=column gap=36 {
+  group top layout=row gap=40 .bare {
+    sched "HAMi scheduler" sub=":9395 · real" .green
+    node "hami-lab node" sub="2 × A100-40GB fake"
+    plugin "mock-device-plugin" sub="gpumem · gpucores"
+  }
+  group bottom layout=row gap=40 .bare {
+    pods "Pods" sub="share · pack · sim" .blue
+    monitor "hami-mock-monitor" sub=":9394 · usage"
+  }
+}
+plugin -> node
+node -> sched "capacity"
+you -> sched "kubectl apply"
+sched -> pods "fit + bind" flow=forward
+pods -> monitor "usage"
+monitor -> you "metrics"
+css { group.bare { fill: none; stroke: none; padding: 0; } }
+```
 
 ::: grid {cols=2}
 ::: card {tag=cyan}
@@ -591,11 +612,36 @@ metadata:
 
 @subtitle One isolation layer, several scheduling brains
 
-![One isolation layer, several scheduling brains](assets/containerdays/containerdays-scheduling-brains.svg)
+```pdg
+graph layout=column theme=hami gap=22
+group inputs layout=row gap=90 .bare {
+  pod "GPU Pod" sub="fractional request"
+  adm "Admission" sub="mutating webhook"
+  dra "HAMi-DRA" sub="gpu → claim"
+}
+group brains "Scheduling brains" layout=row gap=60 {
+  ext "HAMi extender" sub="gpumem · gpucores" .blue
+  vol "Volcano" sub="vgpu-* · gang · queue" .blue
+  kai "KAI Scheduler" sub="gpu-fraction · topo" .blue
+  ks "kube-scheduler" sub="DRA driver · 1.34+"
+}
+core "HAMi-core" sub="libvgpu.so · hard isolation" .green border=glow
+pod -> adm
+adm -> ext "default"
+adm -> vol "volcano"
+adm -> kai "KAI"
+adm -> dra "DRA"
+dra -> ks
+ext -> core
+vol -> core
+kai -> core
+ks -> core "via isolator"
+css { group.bare { fill: none; stroke: none; padding: 0; } }
+```
 
-- A **capacity model**: the extended resources plus the scheduler extender you just used
-- **HAMi-core**: the isolation library
-- Other schedulers can replace the placement brain and keep the isolation layer
+<!--
+A capacity model: the extended resources plus the scheduler extender you just used. HAMi-core: the isolation library. Other schedulers can replace the placement brain and keep the isolation layer.
+-->
 
 ---
 
