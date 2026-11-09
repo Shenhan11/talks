@@ -628,23 +628,39 @@ metadata:
 
 ## Where topology information comes from
 
+@subtitle Every vendor: the node's device plugin reads it, an annotation carries it, the scheduler scores it
+
 ```pdg
-graph layout=column theme=hami gap=40
-group r1 layout=row gap=70 .bare {
-  nvml "NVML" sub="P2P links: NVLink · PCIe" border=glow
-  dp "hami-device-plugin" sub="ENABLE_TOPOLOGY_SCORE=true" .green
-  anno "Node annotation" sub="hami.io/node-nvidia-score"
+graph layout=row theme=hami gap=56
+group src "On the node" layout=column gap=14 {
+  nv "NVIDIA · NVML" sub="NVLink and PCIe P2P links"
+  amd "AMD · KFD topology" sub="XGMI peers, NUMA node"
+  mx "MetaX · vendor plugin" sub="MetaXLink and PCIe switch"
+  kl "Kunlunxin, AWS Neuron" sub="fixed board layout by index"
 }
-group r2 layout=row gap=70 .bare {
-  hs "hami-scheduler" sub="policy topology-aware" .blue
-  pick "Card choice" sub="1 card: weakest links · N cards: best-linked set"
-}
-nvml -> dp "pair scores" flow=forward
+dp "Device plugin" sub="per vendor, DaemonSet" .green
+anno "Node annotations" sub="register: numa, links\nscores: pair scores" border=glow
+hs "hami-scheduler" sub="Filter + Score per vendor" .blue
+nv -> dp
+amd -> dp
+mx -> dp
+kl -> dp
 dp -> anno "patches" flow=forward
 anno -> hs "reads" flow=forward
-hs -> pick flow=forward
-css { group.bare { fill: none; stroke: none; padding: 0; } }
 ```
+
+<!--
+The scheduler never talks to the hardware. Whatever the device plugin can see on the node, it writes into node annotations; the scheduler's per-vendor code in pkg/device/<vendor> turns that into a card choice. Kubelet's Topology Manager is the second, node-local source (CPU/NUMA alignment); for NVIDIA the plugin can ask the scheduler to refit when they disagree.
+-->
+
+---
+
+## Topology, vendor by vendor
+
+- **NVIDIA:** `ENABLE_TOPOLOGY_SCORE=true` scores every card pair from NVML into `hami.io/node-nvidia-score`. Policy `topology-aware`: one card gets the weakest-linked card, N cards get the best-linked set
+- **AMD:** `xgmiPeers` and `numa` per GPU in `hami.io/node-amd-register`. Pod annotations `amd.com/numa-bind`, `amd.com/link-bind`, or policy `topology-aware`
+- **MetaX:** the vendor plugin writes `metax-tech.com/gpu.topology.scores` and `.losses`. MetaXLink first, then PCIe switch
+- **Kunlunxin, AWS Neuron:** no link data; the layout is fixed, so the scheduler reads it from card index (NUMA halves of 8, Neuron rings)
 
 ```yaml
 metadata:
@@ -653,7 +669,7 @@ metadata:
 ```
 
 <!--
-Same path as card inventory (hami.io/node-nvidia-register), a second annotation. Cluster-wide: --set scheduler.defaultSchedulerPolicy.gpuSchedulerPolicy=topology-aware. Asymmetric P2P data scores 0 and raises an AsymmetricGPUP2PLink node event. Node choice prefers the smallest node that fits. In the lab, fake-gpus.json carries a numa field per card. Code: pkg/device-plugin/nvidiadevice/nvinternal/plugin/register.go, pkg/device/nvidia/device.go.
+Every register annotation also carries a numa field per card. Kunlunxin: 1, 2, 4 or 8 cards, 1–4 must not cross NUMA, minimise fragmentation. Asymmetric NVIDIA P2P data scores 0 and raises an AsymmetricGPUP2PLink node event. AMD topology-aware needs a HAMi release newer than v2.10.0. Code: pkg/device/nvidia/calculate_score.go, pkg/device/amd/device.go (bestLinkedCombination), pkg/device/metax/sdevice.go, pkg/device/kunlun/topo.go, pkg/device/awsneuron/device.go (graphSelect).
 -->
 
 ---
